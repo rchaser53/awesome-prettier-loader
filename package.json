@@ -1,0 +1,32 @@
+{
+  "name": "prettier-loader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack",
+    "start": "webpack-dev-server",
+    "format": "./node_modules/.bin/prettier --write \"test/**/*.{js,html,vue}\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rchaser53/prettier-loader.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rchaser53/prettier-loader/issues"
+  },
+  "homepage": "https://github.com/rchaser53/prettier-loader#readme",
+  "dependencies": {
+
+  },
+  "devDependencies": {
+    "jest": "^22.4.2",
+    "prettier": "^1.11.1",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.10",
+    "webpack-dev-server": "^3.1.0"
+  }
+}
