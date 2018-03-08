@@ -6,6 +6,7 @@ const checksum = require('checksum');
 const prettier = require("prettier")
 
 let lastChecksum = {};
+let initialFlg = true;
 const pitch = function(remainingRequest, prevRequest, dataInput) {
   const fileCheckSum = checksum(fs.readFileSync(remainingRequest));
   if (lastChecksum[remainingRequest] == null) {
@@ -19,11 +20,12 @@ const loader = function(sources) {
   const callback = this.async();
   const { fileCheckSum, remainingRequest } = this.data;
 
-  if (fileCheckSum !== lastChecksum[remainingRequest]) {
+  if (fileCheckSum !== lastChecksum[remainingRequest] || initialFlg === true) {
     const output = prettier.format(fs.readFileSync(remainingRequest, { encoding: 'utf8' }), { semi: false })
     fs.writeFile(remainingRequest, output, (err) => {
       delete lastChecksum[remainingRequest];
       callback(err, sources[0]);
+      initialFlg = false;
     });
     return
   }
