@@ -13,7 +13,6 @@ module.exports = {
 	module: {
 		rules: [
       {
-        enforce: 'pre',
         test: /\.js$/,
         loader: path.resolve(__dirname, 'src/loader.js'),
         exclude: /(node_modules)/,
