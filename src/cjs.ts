@@ -1,5 +1,3 @@
-import { loader, pitch } from './index'
-export default {
-	default: loader,
-	pitch
-}
+import { defaultLoader, pitchLoader } from './index'
+export default defaultLoader;
+export const pitch = pitchLoader;

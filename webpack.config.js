@@ -17,7 +17,7 @@ module.exports = {
         use: [
           'babel-loader',
           {
-            loader: path.resolve(__dirname, 'dist/index.js'),
+            loader: path.resolve(__dirname, 'dist/cjs.js'),
             options: {
               configPath: '.prettierrc',
               ignorePath: '.prettierignore',

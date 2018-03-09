@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import { getOptions } from 'loader-utils'
 import * as validateOptions from 'schema-utils'
 import * as checksum from 'checksum'
-import prettier from 'prettier'
+import * as prettier from 'prettier'
 
 import schema from './options'
 
@@ -11,7 +11,7 @@ let initialFlg = true
 let configPrettier
 let configIgnore
 
-export const pitch = function(remainingRequest, prevRequest, dataInput) {
+export const pitchLoader = function(remainingRequest, prevRequest, dataInput) {
 	const actualPath = remainingRequest.split('!').pop()
 	const fileCheckSum = checksum(fs.readFileSync(actualPath))
 	initializeConfig(this)
@@ -42,7 +42,7 @@ const initializeConfig = function(context) {
 	}
 }
 
-export const loader = function(sources) {
+export const defaultLoader = function(sources) {
 	const callback = this.async()
 	const { remainingRequest } = this.data
 
