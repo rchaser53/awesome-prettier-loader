@@ -5,8 +5,9 @@
   "main": "dist/cjs.js",
   "scripts": {
     "build": "tsc -p .",
+    "precommit": "npm run format",
     "start": "webpack-dev-server",
-    "format": "./node_modules/.bin/prettier --write \"test/**/*.{js,html,vue}\""
+    "format": "./node_modules/.bin/prettier --write \"**/*.{ts,html,md}\""
   },
   "repository": {
     "type": "git",
@@ -14,9 +15,15 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/rchaser53/prettier-loader/issues"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "npm run format",
+      "git add ."
+    ]
   },
   "homepage": "https://github.com/rchaser53/prettier-loader#readme",
   "dependencies": {

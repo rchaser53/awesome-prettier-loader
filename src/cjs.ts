@@ -1,5 +1,5 @@
-import { loader, pitch } from './index';
+import { loader, pitch } from './index'
 export default {
-  default: loader,
-  pitch
-};
+	default: loader,
+	pitch
+}
