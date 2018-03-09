@@ -1,7 +1,10 @@
 const fs = require('fs');
 const { getOptions } = require('loader-utils');
+const validateOptions = require('schema-utils');
 const checksum = require('checksum');
 const prettier = require('prettier');
+
+const schema = require('./options.json');
 
 let lastChecksum = {};
 let initialFlg = true;
@@ -23,7 +26,10 @@ const pitch = function(remainingRequest, prevRequest, dataInput) {
 
 const initializeConfig = function(context) {
   if (configPrettier == null || configIgnore == null) {
-    const { configPath, ignorePath } = getOptions(context);
+    const options = getOptions(context);
+    const { configPath, ignorePath } = options;
+
+    validateOptions(schema, options, 'Cache Loader');
     try {
       const prettierStr = fs.readFileSync(configPath, { encoding: 'utf8' });
       const ignoreStr = fs.readFileSync(ignorePath, { encoding: 'utf8' });
