@@ -14,12 +14,15 @@ module.exports = {
 		rules: [
       {
         test: /\.js$/,
-        loader: path.resolve(__dirname, 'src/loader.js'),
+        use: [
+          'babel-loader',
+          {
+            loader: path.resolve(__dirname, 'src/loader.js'),
+            options: {}
+          }
+        ],
         exclude: /(node_modules)/,
-        options: {
-          configFile: 'tslint.json'
-        }
-    }
+      },
 		]
 	},
 	devServer: {

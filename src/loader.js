@@ -8,11 +8,13 @@ const prettier = require("prettier")
 let lastChecksum = {};
 let initialFlg = true;
 const pitch = function(remainingRequest, prevRequest, dataInput) {
-  const fileCheckSum = checksum(fs.readFileSync(remainingRequest));
+  const actualPath = remainingRequest.split('!').pop();
+  const fileCheckSum = checksum(fs.readFileSync(actualPath));
   if (lastChecksum[remainingRequest] == null) {
     lastChecksum[remainingRequest] = fileCheckSum;
   }
-  dataInput.remainingRequest = remainingRequest;
+
+  dataInput.remainingRequest = actualPath;
   dataInput.fileCheckSum = fileCheckSum;
 }
 
