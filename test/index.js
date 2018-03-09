@@ -1,1 +1,1 @@
-const hoge = 2343
+const hoge = "2343";

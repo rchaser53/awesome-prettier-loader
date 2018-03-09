@@ -2,9 +2,9 @@
   "name": "prettier-loader",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
+  "main": "dist/cjs.js",
   "scripts": {
-    "build": "webpack",
+    "build": "tsc -p .",
     "start": "webpack-dev-server",
     "format": "./node_modules/.bin/prettier --write \"test/**/*.{js,html,vue}\""
   },
