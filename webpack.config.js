@@ -18,7 +18,10 @@ module.exports = {
           'babel-loader',
           {
             loader: path.resolve(__dirname, 'src/loader.js'),
-            options: {}
+            options: {
+              configPath: '.prettierrc',
+              ignorePath: '.prettierignore',
+            }
           }
         ],
         exclude: /(node_modules)/,
