@@ -12,7 +12,11 @@ let lastChecksum: { [key: string]: string } = {}
 let initialFlg = true
 let configPrettier
 let configIgnore
-export const pitchLoader = function(remainingRequest: string, prevRequest, dataInput: { [key: string]: any }): void {
+export const pitchLoader = async function(
+	remainingRequest: string,
+	prevRequest,
+	dataInput: { [key: string]: any }
+): Promise<void> {
 	const callback = this.async()
 	const actualPath = getActualPath(remainingRequest)
 
@@ -25,34 +29,23 @@ export const pitchLoader = function(remainingRequest: string, prevRequest, dataI
 		return
 	}
 
-	const fileCheckSum = checksum(fs.readFileSync(actualPath))
-
-	if (lastChecksum[remainingRequest] == null) {
-		lastChecksum[remainingRequest] = fileCheckSum
-	}
-
-	if (shouldFormat(fileCheckSum, remainingRequest)) {
-		console.log(1, actualPath, 2)
-		format(actualPath)
-			.then((ret) => {
-				delete lastChecksum[remainingRequest]
-				initialFlg = false
-				callback(null)
-			})
-			.catch((_) => {
-				callback(null)
-			})
-	}
-	callback(null)
-}
-
-const format = async function(targetPath: string): Promise<void> {
 	try {
-		const data = await read(targetPath)
-		const formattedData = prettier.format(data, configPrettier)
-		await write(targetPath, formattedData)
+		const data = await read(actualPath)
+		const fileCheckSum = checksum(data)
+
+		if (lastChecksum[remainingRequest] == null) {
+			lastChecksum[remainingRequest] = fileCheckSum
+		}
+		if (shouldFormat(fileCheckSum, remainingRequest)) {
+			const formattedData = prettier.format(data, configPrettier)
+			await write(actualPath, formattedData)
+
+			delete lastChecksum[remainingRequest]
+			initialFlg = false
+		}
+		callback(null)
 	} catch (err) {
-		throw new Error(err)
+		callback(err)
 	}
 }
 
