@@ -2,12 +2,13 @@ import * as fs from 'fs'
 import { getOptions } from 'loader-utils'
 import * as validateOptions from 'schema-utils'
 import * as checksum from 'checksum'
+import ignore = require('ignore')
 import * as prettier from 'prettier'
 
 import schema from './options'
 
+let ig = ignore()
 let lastChecksum: { [key: string]: string } = {}
-let ignorePaths: string[] = []
 let initialFlg = true
 let configPrettier
 let configIgnore
@@ -15,33 +16,31 @@ export const pitchLoader = function(remainingRequest: string, prevRequest, dataI
 	const callback = this.async()
 	const actualPath = getActualPath(remainingRequest)
 
-	if (ignorePaths.includes(actualPath) === true) {
-		callback(null)
-		return
+	if (initialFlg === false) {
+		initializeConfig(this)
 	}
 
-	if (-1 < actualPath.indexOf('node_modules')) {
-		ignorePaths.push(actualPath)
+	if (ig.ignores(actualPath) === true) {
 		callback(null)
 		return
 	}
 
 	const fileCheckSum = checksum(fs.readFileSync(actualPath))
-	initializeConfig(this)
 
 	if (lastChecksum[remainingRequest] == null) {
 		lastChecksum[remainingRequest] = fileCheckSum
 	}
 
-	if (isFormat(fileCheckSum, remainingRequest)) {
-		format(remainingRequest)
+	if (shouldFormat(fileCheckSum, remainingRequest)) {
+		console.log(1, actualPath, 2)
+		format(actualPath)
 			.then((ret) => {
 				delete lastChecksum[remainingRequest]
 				initialFlg = false
 				callback(null)
 			})
-			.catch((err) => {
-				callback(err)
+			.catch((_) => {
+				callback(null)
 			})
 	}
 	callback(null)
@@ -99,14 +98,18 @@ const initializeConfig = function(context): void {
 			const prettierStr = fs.readFileSync(configPath, { encoding: 'utf8' })
 			const ignoreStr = fs.readFileSync(ignorePath, { encoding: 'utf8' })
 			configPrettier = JSON.parse(prettierStr)
-			configIgnore = JSON.parse(ignoreStr)
+			configIgnore = resolveIgnore(ignoreStr)
+			ig.add(configIgnore)
 		} catch (err) {
 			configPrettier = {}
-			configIgnore = {}
 		}
 	}
 }
 
-const isFormat = function(fileCheckSum: string, remainingRequest: string): boolean {
+const resolveIgnore = (input: string): string[] => {
+	return input.split('\n') || []
+}
+
+const shouldFormat = function(fileCheckSum: string, remainingRequest: string): boolean {
 	return fileCheckSum !== lastChecksum[remainingRequest] || initialFlg === true
 }

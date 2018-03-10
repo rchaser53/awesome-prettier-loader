@@ -1,24 +1,22 @@
 {
-  "extends": [
-    "tslint-config-prettier"
-  ],
+	"extends": ["tslint-config-prettier"],
 	"rules": {
 		"class-name": true,
-    "comment-format": [true, "check-space"],
+		"comment-format": [true, "check-space"],
 		"indent": [true, "tabs"],
-    "no-arg": true,
-    "no-conditional-assignment": true,
-    "no-console": true,
+		"no-arg": true,
+		"no-conditional-assignment": true,
+		"no-console": true,
 		"no-duplicate-variable": true,
-    "no-eval": true,
+		"no-eval": true,
 		"no-internal-module": false,
-    "no-magic-numbers": true,
+		"no-magic-numbers": true,
 		"no-trailing-whitespace": false,
-    "no-var-keyword": true,
+		"no-var-keyword": true,
 		"one-line": [true, "check-open-brace", "check-whitespace"],
 		"quotemark": [true, "single"],
 		"semicolon": [true],
-    "triple-equals": [true, "allow-null-check"],
+		"triple-equals": [true, "allow-null-check"],
 		"typedef-whitespace": [
 			true,
 			{
@@ -28,7 +26,7 @@
 				"property-declaration": "nospace",
 				"variable-declaration": "nospace"
 			}
-    ],
+		],
 		"variable-name": [true, "ban-keywords"],
 		"whitespace": [true, "check-branch", "check-decl", "check-operator", "check-separator", "check-type"]
 	}
