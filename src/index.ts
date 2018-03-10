@@ -9,7 +9,7 @@ import schema from './options'
 
 let ig = ignore()
 let lastChecksum: { [key: string]: string } = {}
-let initialFlg = true
+let dirtyRequests: string[] = []
 let configPrettier
 let configIgnore
 export const pitchLoader = async function(
@@ -20,7 +20,7 @@ export const pitchLoader = async function(
 	const callback = this.async()
 	const actualPath = getActualPath(remainingRequest)
 
-	if (initialFlg === false) {
+	if (dirtyRequests.length === 0) {
 		initializeConfig(this)
 	}
 
@@ -31,7 +31,7 @@ export const pitchLoader = async function(
 
 	try {
 		const data = await read(actualPath)
-		const fileCheckSum = checksum(data)
+		const fileCheckSum: string = checksum(data)
 
 		if (lastChecksum[remainingRequest] == null) {
 			lastChecksum[remainingRequest] = fileCheckSum
@@ -41,7 +41,7 @@ export const pitchLoader = async function(
 			await write(actualPath, formattedData)
 
 			delete lastChecksum[remainingRequest]
-			initialFlg = false
+			dirtyRequests.push(remainingRequest)
 		}
 		callback(null)
 	} catch (err) {
@@ -104,5 +104,5 @@ const resolveIgnore = (input: string): string[] => {
 }
 
 const shouldFormat = function(fileCheckSum: string, remainingRequest: string): boolean {
-	return fileCheckSum !== lastChecksum[remainingRequest] || initialFlg === true
+	return fileCheckSum !== lastChecksum[remainingRequest] || dirtyRequests.includes(remainingRequest) == false
 }
