@@ -5,9 +5,10 @@
   "main": "dist/cjs.js",
   "scripts": {
     "build": "tsc -p .",
+    "test": "jest test --no-cache",
     "precommit": "npm run format",
     "start": "webpack-dev-server",
-    "format": "./node_modules/.bin/prettier --write \"**/*.{ts,html,md}\""
+    "format": "./node_modules/.bin/prettier --write \"**/*.{ts,html,json,md}\""
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
     "checksum": "^0.1.1"
   },
   "devDependencies": {
+    "@types/jest": "^22.2.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.4",
     "husky": "^0.14.3",
