@@ -1,1 +1,1 @@
-const hoge = "2343";
+module.export = "2343";

@@ -7,12 +7,25 @@ import * as prettier from 'prettier'
 import schema from './options'
 
 let lastChecksum = {}
+let ignorePaths: string[] = []
 let initialFlg = true
 let configPrettier
 let configIgnore
+export const pitchLoader = function(remainingRequest, prevRequest, dataInput): void {
+	const callback = this.async()
+	const actualPath = getActualPath(remainingRequest)
 
-export const pitchLoader = function(remainingRequest, prevRequest, dataInput) {
-	const actualPath = remainingRequest.split('!').pop()
+	if (ignorePaths.includes(actualPath) === true) {
+		callback(null)
+		return
+	}
+
+	if (-1 < actualPath.indexOf('node_modules')) {
+		ignorePaths.push(actualPath)
+		callback(null)
+		return
+	}
+
 	const fileCheckSum = checksum(fs.readFileSync(actualPath))
 	initializeConfig(this)
 
@@ -20,8 +33,60 @@ export const pitchLoader = function(remainingRequest, prevRequest, dataInput) {
 		lastChecksum[remainingRequest] = fileCheckSum
 	}
 
-	dataInput.remainingRequest = actualPath
-	dataInput.fileCheckSum = fileCheckSum
+	if (isFormat(fileCheckSum, remainingRequest)) {
+		format(remainingRequest)
+			.then((ret) => {
+				delete lastChecksum[remainingRequest]
+				initialFlg = false
+				callback(null)
+			})
+			.catch((err) => {
+				callback(err)
+			})
+	}
+	callback(null)
+}
+
+const format = async function(targetPath: string): Promise<void> {
+	try {
+		const data = await read(targetPath)
+		const formattedData = prettier.format(data, configPrettier)
+		await write(targetPath, formattedData)
+	} catch (err) {
+		throw new Error(err)
+	}
+}
+
+const read = function(targetPath: string): Promise<string> {
+	return new Promise(function(resolve, reject) {
+		fs.readFile(targetPath, { encoding: 'utf8' }, function(err, data) {
+			if (err) {
+				reject(err)
+				return
+			}
+			resolve(data)
+		})
+	})
+}
+
+const write = function(path: string, data: string): Promise<void> {
+	return new Promise(function(resolve, reject) {
+		fs.writeFile(path, data, function(err) {
+			if (err) {
+				reject(err)
+				return
+			}
+			resolve()
+		})
+	})
+}
+
+const getActualPath = function(remainingRequest: string): string {
+	const lastPath = remainingRequest.split('!').pop()
+	if (lastPath != null) {
+		return lastPath.split('?')[0]
+	}
+	throw new Error(`${lastPath} is not a string.`)
 }
 
 const initializeConfig = function(context) {
@@ -42,28 +107,6 @@ const initializeConfig = function(context) {
 	}
 }
 
-export const defaultLoader = function(sources) {
-	const callback = this.async()
-	const { remainingRequest } = this.data
-
-	if (isFormat(this)) {
-		try {
-			const output = prettier.format(fs.readFileSync(remainingRequest, { encoding: 'utf8' }), configPrettier)
-			fs.writeFile(remainingRequest, output, (err) => {
-				delete lastChecksum[remainingRequest]
-				callback(err, sources[0])
-				initialFlg = false
-			})
-		} catch (err) {
-			console.error(err)
-		}
-
-		return
-	}
-	callback(null, sources[0])
-}
-
-const isFormat = function(context) {
-	const { fileCheckSum, remainingRequest } = context.data
+const isFormat = function(fileCheckSum, remainingRequest) {
 	return fileCheckSum !== lastChecksum[remainingRequest] || initialFlg === true
 }
