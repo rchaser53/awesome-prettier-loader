@@ -1,0 +1,25 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/workspace
+    docker:
+      - image: circleci/node:9.7.1
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - node_modules-{{ .Branch }}-{{ checksum "yarn.lock" }}
+
+      - run: yarn install
+
+      - save_cache:
+          key: node_modules-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/workspace/node_modules
+            - ~/.cache/yarn/
+        
+      - run: 
+          name: test
+          command: npm test
