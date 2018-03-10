@@ -6,12 +6,12 @@ import * as prettier from 'prettier'
 
 import schema from './options'
 
-let lastChecksum = {}
+let lastChecksum: { [key: string]: string } = {}
 let ignorePaths: string[] = []
 let initialFlg = true
 let configPrettier
 let configIgnore
-export const pitchLoader = function(remainingRequest, prevRequest, dataInput): void {
+export const pitchLoader = function(remainingRequest: string, prevRequest, dataInput: { [key: string]: any }): void {
 	const callback = this.async()
 	const actualPath = getActualPath(remainingRequest)
 
@@ -89,7 +89,7 @@ const getActualPath = function(remainingRequest: string): string {
 	throw new Error(`${lastPath} is not a string.`)
 }
 
-const initializeConfig = function(context) {
+const initializeConfig = function(context): void {
 	if (configPrettier == null || configIgnore == null) {
 		const options = getOptions(context)
 		const { configPath, ignorePath } = options
@@ -107,6 +107,6 @@ const initializeConfig = function(context) {
 	}
 }
 
-const isFormat = function(fileCheckSum, remainingRequest) {
+const isFormat = function(fileCheckSum: string, remainingRequest: string): boolean {
 	return fileCheckSum !== lastChecksum[remainingRequest] || initialFlg === true
 }
