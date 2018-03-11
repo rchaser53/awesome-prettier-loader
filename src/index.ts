@@ -39,9 +39,12 @@ export const defaultLoader = function(input) {
 			if (lastChecksum[remainingRequest] == null) {
 				lastChecksum[remainingRequest] = fileCheckSum
 			}
-			if (shouldFormat(fileCheckSum, remainingRequest)) {
+			if (shouldFormat(fileCheckSum, remainingRequest) === true) {
 				const formattedData = prettier.format(data, configPrettier)
-				await write(actualPath, formattedData)
+
+				if (fileCheckSum !== checksum(formattedData)) {
+					await write(actualPath, formattedData)
+				}
 
 				delete lastChecksum[remainingRequest]
 				dirtyRequests.push(remainingRequest)
@@ -97,7 +100,7 @@ const initializeConfig = function(context): void {
 		const options = getOptions(context)
 		const { configPath, ignorePath } = options
 
-		validateOptions(schema, options, 'Cache Loader')
+		validateOptions(schema, options, 'prettier loader')
 		try {
 			const prettierStr = fs.readFileSync(configPath, { encoding: 'utf8' })
 			const ignoreStr = fs.readFileSync(ignorePath, { encoding: 'utf8' })
