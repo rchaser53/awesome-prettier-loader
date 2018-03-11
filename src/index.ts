@@ -12,16 +12,13 @@ let lastChecksum: { [key: string]: string } = {}
 let dirtyRequests: string[] = []
 let configPrettier
 let configIgnore
-export const pitchLoader = async function(
-	remainingRequest: string,
-	prevRequest,
-	dataInput: { [key: string]: any }
-): Promise<void> {
-	const callback = this.async()
+export const pitchLoader = function(remainingRequest: string, prevRequest, dataInput: { [key: string]: any }): void {
+	const webpack = this
+	const callback = webpack.async()
 	const actualPath = getActualPath(remainingRequest)
 
 	if (dirtyRequests.length === 0) {
-		initializeConfig(this)
+		initializeConfig(webpack)
 	}
 
 	if (ig.ignores(actualPath) === true) {
@@ -29,24 +26,33 @@ export const pitchLoader = async function(
 		return
 	}
 
-	try {
-		const data = await read(actualPath)
-		const fileCheckSum: string = checksum(data)
+	const innerPitchLoader = async function() {
+		try {
+			const data = await read(actualPath)
+			const fileCheckSum: string = checksum(data)
 
-		if (lastChecksum[remainingRequest] == null) {
-			lastChecksum[remainingRequest] = fileCheckSum
-		}
-		if (shouldFormat(fileCheckSum, remainingRequest)) {
-			const formattedData = prettier.format(data, configPrettier)
-			await write(actualPath, formattedData)
+			if (lastChecksum[remainingRequest] == null) {
+				lastChecksum[remainingRequest] = fileCheckSum
+			}
+			if (shouldFormat(fileCheckSum, remainingRequest)) {
+				const formattedData = prettier.format(data, configPrettier)
+				await write(actualPath, formattedData)
 
-			delete lastChecksum[remainingRequest]
-			dirtyRequests.push(remainingRequest)
+				delete lastChecksum[remainingRequest]
+				dirtyRequests.push(remainingRequest)
+			}
+		} catch (err) {
+			throw new Error(err)
 		}
-		callback(null)
-	} catch (err) {
-		callback(err)
 	}
+
+	innerPitchLoader()
+		.then(function() {
+			callback(null)
+		})
+		.catch(function(err) {
+			callback(err)
+		})
 }
 
 const read = function(targetPath: string): Promise<string> {
