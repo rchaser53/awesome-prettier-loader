@@ -46,10 +46,8 @@ export const defaultLoader = function(input) {
 			if (shouldFormat(fileCheckSum, remainingRequest) === true) {
 				const formattedData = prettier.format(data, configPrettier)
 
-				if (fileCheckSum !== checksum(formattedData)) {
-					await write(actualPath, formattedData)
-				}
-
+				if (fileCheckSum === checksum(formattedData)) return
+				await write(actualPath, formattedData)
 				delete lastChecksum[remainingRequest]
 				dirtyRequests.push(remainingRequest)
 			}
