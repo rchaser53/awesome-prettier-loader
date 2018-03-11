@@ -1,3 +1,4 @@
+import * as path from 'path'
 import * as fs from 'fs'
 import { getOptions } from 'loader-utils'
 import * as validateOptions from 'schema-utils'
@@ -7,11 +8,15 @@ import * as prettier from 'prettier'
 
 import schema from './options'
 
+let configPrettier
 let ig = ignore()
 let lastChecksum: { [key: string]: string } = {}
 let dirtyRequests: string[] = []
-let configPrettier
-let configIgnore
+let configIgnore: string[] = []
+const DefaultConfigIgnore = ['node_modules']
+const DefaultConfigPath = path.resolve(__dirname, '.prettierrc')
+const DefaultIgnorePath = path.resolve(__dirname, '.prettierignore')
+
 export const pitchLoader = function(remainingRequest: string, prevRequest, dataInput: { [key: string]: any }): void {
 	dataInput.remainingRequest = remainingRequest
 }
@@ -98,23 +103,26 @@ const getActualPath = function(remainingRequest: string): string {
 const initializeConfig = function(context): void {
 	if (configPrettier == null || configIgnore == null) {
 		const options = getOptions(context)
-		const { configPath, ignorePath } = options
+		const { configPath, ignorePath } = options || ({} as any)
+		const actualConfigPath = configPath || DefaultConfigPath
+		const actualIgnorePath = ignorePath || DefaultIgnorePath
 
 		validateOptions(schema, options || {}, 'prettier loader')
 		try {
-			const prettierStr = fs.readFileSync(configPath, { encoding: 'utf8' })
-			const ignoreStr = fs.readFileSync(ignorePath, { encoding: 'utf8' })
+			const prettierStr = fs.readFileSync(actualConfigPath, { encoding: 'utf8' })
+			const ignoreStr = fs.readFileSync(actualIgnorePath, { encoding: 'utf8' })
 			configPrettier = JSON.parse(prettierStr)
 			configIgnore = resolveIgnore(ignoreStr)
 			ig.add(configIgnore)
 		} catch (err) {
 			configPrettier = {}
+			ig.add(DefaultConfigIgnore)
 		}
 	}
 }
 
 const resolveIgnore = (input: string): string[] => {
-	return input.split('\n') || []
+	return input.split('\n') || DefaultConfigIgnore
 }
 
 const shouldFormat = function(fileCheckSum: string, remainingRequest: string): boolean {
