@@ -16,53 +16,62 @@ let configIgnore: string[] = []
 const DefaultConfigIgnore = ['node_modules']
 const DefaultConfigPath = path.resolve(process.cwd(), '.prettierrc')
 const DefaultIgnorePath = path.resolve(process.cwd(), '.prettierignore')
-export const pitchLoader = function(remainingRequest: string, prevRequest, dataInput: { [key: string]: any }): void {
-	dataInput.remainingRequest = remainingRequest
+
+export interface Reader {
+	(path: string): Promise<string>
+}
+export interface Writer {
+	(path: string, data: string): Promise<void>
+}
+export interface DefaultLoader {
+	(input: string): void
 }
 
-export const defaultLoader = function(input) {
-	this.cacheable()
-	const { remainingRequest } = this.data
-	const callback = this.async()
-	const actualPath = getActualPath(remainingRequest)
+export const createDefaultLoader = function(reader: Reader, writer: Writer): DefaultLoader {
+	return function(input: string) {
+		this.cacheable()
+		const { remainingRequest } = this.data
+		const callback = this.async()
+		const actualPath = getActualPath(remainingRequest)
 
-	if (dirtyRequests.length === 0) {
-		initializeConfig(this)
-	}
-
-	if (ig.ignores(actualPath) === true) {
-		callback(null)
-		return
-	}
-
-	const innerPitchLoader = async function() {
-		try {
-			const data = await read(actualPath)
-			const fileCheckSum: string = checksum(data)
-
-			if (lastChecksum[remainingRequest] == null) {
-				lastChecksum[remainingRequest] = fileCheckSum
-			}
-			if (shouldFormat(fileCheckSum, remainingRequest) === true) {
-				const formattedData = prettier.format(data, configPrettier)
-
-				if (fileCheckSum === checksum(formattedData)) return
-				await write(actualPath, formattedData)
-				delete lastChecksum[remainingRequest]
-				dirtyRequests.push(remainingRequest)
-			}
-		} catch (err) {
-			throw new Error(err)
+		if (dirtyRequests.length === 0) {
+			initializeConfig(this)
 		}
-	}
 
-	innerPitchLoader()
-		.then(function() {
-			callback(null, input)
-		})
-		.catch(function(err) {
-			callback(err)
-		})
+		if (ig.ignores(actualPath) === true) {
+			callback(null)
+			return
+		}
+
+		const innerPitchLoader = async function() {
+			try {
+				const data = await reader(actualPath)
+				const fileCheckSum: string = checksum(data)
+
+				if (lastChecksum[remainingRequest] == null) {
+					lastChecksum[remainingRequest] = fileCheckSum
+				}
+				if (shouldFormat(fileCheckSum, remainingRequest) === true) {
+					const formattedData = prettier.format(data, configPrettier)
+
+					if (fileCheckSum === checksum(formattedData)) return
+					await writer(actualPath, formattedData)
+					delete lastChecksum[remainingRequest]
+					dirtyRequests.push(remainingRequest)
+				}
+			} catch (err) {
+				throw new Error(err)
+			}
+		}
+
+		innerPitchLoader()
+			.then(function() {
+				callback(null, input)
+			})
+			.catch(function(err) {
+				callback(err)
+			})
+	}
 }
 
 const read = function(targetPath: string): Promise<string> {
@@ -77,7 +86,7 @@ const read = function(targetPath: string): Promise<string> {
 	})
 }
 
-const write = function(path: string, data: string): Promise<void> {
+const write: Writer = function(path, data) {
 	return new Promise(function(resolve, reject) {
 		fs.writeFile(path, data, function(err) {
 			if (err) {
@@ -125,3 +134,8 @@ const resolveIgnore = (input: string): string[] => {
 const shouldFormat = function(fileCheckSum: string, remainingRequest: string): boolean {
 	return fileCheckSum !== lastChecksum[remainingRequest] || dirtyRequests.includes(remainingRequest) == false
 }
+
+export const pitchLoader = function(remainingRequest: string, prevRequest, dataInput: { [key: string]: any }): void {
+	dataInput.remainingRequest = remainingRequest
+}
+export const defaultLoader = createDefaultLoader(read, write)
