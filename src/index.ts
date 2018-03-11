@@ -13,12 +13,17 @@ let dirtyRequests: string[] = []
 let configPrettier
 let configIgnore
 export const pitchLoader = function(remainingRequest: string, prevRequest, dataInput: { [key: string]: any }): void {
-	const webpack = this
-	const callback = webpack.async()
+	dataInput.remainingRequest = remainingRequest
+}
+
+export const defaultLoader = function(input) {
+	this.cacheable()
+	const { remainingRequest } = this.data
+	const callback = this.async()
 	const actualPath = getActualPath(remainingRequest)
 
 	if (dirtyRequests.length === 0) {
-		initializeConfig(webpack)
+		initializeConfig(this)
 	}
 
 	if (ig.ignores(actualPath) === true) {
@@ -48,7 +53,7 @@ export const pitchLoader = function(remainingRequest: string, prevRequest, dataI
 
 	innerPitchLoader()
 		.then(function() {
-			callback(null)
+			callback(null, input)
 		})
 		.catch(function(err) {
 			callback(err)

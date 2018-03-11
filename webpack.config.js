@@ -14,8 +14,8 @@ module.exports = {
 		rules: [
       {
         test: /\.js$/,
-        enforce: 'pre',
         use: [
+          'babel-loader',
           {
             loader: path.resolve(__dirname, 'dist/cjs.js'),
             options: {
@@ -23,12 +23,6 @@ module.exports = {
               ignorePath: '.prettierignore',
             }
           }
-        ],
-      },
-      {
-        test: /\.js$/,
-        use: [
-          'babel-loader',
         ],
         exclude: /(node_modules)/,
       },
