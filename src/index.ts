@@ -100,7 +100,7 @@ const initializeConfig = function(context): void {
 		const options = getOptions(context)
 		const { configPath, ignorePath } = options
 
-		validateOptions(schema, options, 'prettier loader')
+		validateOptions(schema, options || {}, 'prettier loader')
 		try {
 			const prettierStr = fs.readFileSync(configPath, { encoding: 'utf8' })
 			const ignoreStr = fs.readFileSync(ignorePath, { encoding: 'utf8' })
