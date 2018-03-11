@@ -115,7 +115,7 @@ const write: Writer = function(path, data) {
 	})
 }
 
-const getActualPath = function(remainingRequest: string): string {
+export const getActualPath = function(remainingRequest: string): string {
 	const lastPath = remainingRequest.split('!').pop()
 	if (lastPath != null) {
 		return lastPath.split('?')[0]

@@ -14,6 +14,6 @@ module.exports = {
     '<rootDir>/node_modules/'
   ],
   testMatch: [
-    '**/src/**/__tests__/*.(ts|js)',
+    '**/src/**/__tests__/*-test.(ts|js)',
   ],
 };

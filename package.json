@@ -1,6 +1,6 @@
 {
 	"name": "awesome-prettier-loader",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "alternative prettier-loader",
 	"main": "dist/cjs.js",
 	"scripts": {
