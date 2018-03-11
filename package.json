@@ -1,21 +1,22 @@
 {
-	"name": "prettier-loader",
-	"version": "1.0.0",
-	"description": "",
+	"name": "awesome-prettier-loader",
+	"version": "0.0.2",
+	"description": "alternative prettier-loader",
 	"main": "dist/cjs.js",
 	"scripts": {
 		"build": "tsc -p .",
 		"test": "jest test --no-cache",
 		"precommit": "npm run format",
 		"start": "webpack-dev-server",
-		"format": "./node_modules/.bin/prettier --write \"**/*.{ts,html,json,md}\""
+		"format": "./node_modules/.bin/prettier --write \"**/*.{ts,html,json,md}\"",
+		"prepare": "npm run build && npm run format"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/rchaser53/prettier-loader.git"
 	},
-	"keywords": [],
-	"author": "",
+	"keywords": ["awesome-prettier-loader", "prettier-loader", "webpack", "loader"],
+	"author": "rchaser53",
 	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/rchaser53/prettier-loader/issues"

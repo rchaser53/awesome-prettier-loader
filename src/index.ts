@@ -116,12 +116,12 @@ const initializeConfig = function(context): void {
 		validateOptions(schema, options || {}, 'prettier loader')
 		try {
 			const prettierStr = fs.readFileSync(actualConfigPath, { encoding: 'utf8' })
-			const ignoreStr = fs.readFileSync(actualIgnorePath, { encoding: 'utf8' })
 			configPrettier = JSON.parse(prettierStr)
+			const ignoreStr = fs.readFileSync(actualIgnorePath, { encoding: 'utf8' })
 			configIgnore = resolveIgnore(ignoreStr)
 			ig.add(configIgnore)
 		} catch (err) {
-			configPrettier = {}
+			configPrettier = configPrettier || {}
 			ig.add(DefaultConfigIgnore)
 		}
 	}
