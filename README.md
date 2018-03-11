@@ -1,23 +1,23 @@
-# prettier-loader
+# awesome-prettier-loader
 
-this loader support `.prettierignore` and `webpack-dev-server`(live reloading).
+this is a alternative prettier-loader. this loader support `.prettierignore` and `webpack-dev-server`(live reloading).
 
 ## Installation
 
 ```
- $ npm install prettier-loader --only=dev
+ $ npm install awesome-prettier-loader --only=dev
 ```
 
 or
 
 ```
- $ yarn add prettier-loader --dev
+ $ yarn add awesome-prettier-loader --dev
 ```
 
 ## how to use
 
 this is a beta package, so i didn't test sufficiently for webpack 2 and 3.
-(i have no plan to support for webpack1).
+(not support for webpack 1).
 if you have the problem, please make the issue.
 
 ```
@@ -29,7 +29,7 @@ module.exports = {
       {
         test: /\.js?$/,
         use: {
-          loader: 'prettier-loader'
+          loader: 'awesome-prettier-loader'
         }
       }
     ]
@@ -45,7 +45,7 @@ actually you don't need to set option. prettier-loader will use `.prettierrc` an
 {
   test: /\.js?$/,
   use: {
-    loader: 'prettier-loader'
+    loader: 'awesome-prettier-loader'
     // you don't need to set the below options
     options: {
       configPath: '.prettierrc',
