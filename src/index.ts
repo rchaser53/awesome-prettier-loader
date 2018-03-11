@@ -52,7 +52,7 @@ export const createDefaultLoader = function(reader: Reader, writer: Writer): Def
 					lastChecksum[remainingRequest] = fileCheckSum
 				}
 				if (shouldFormat(fileCheckSum, remainingRequest) === true) {
-					const formattedData = prettier.format(data, configPrettier)
+					const formattedData = prettier.format(data, addFormatToConfig(configPrettier, actualPath))
 
 					if (fileCheckSum === checksum(formattedData)) return
 					await writer(actualPath, formattedData)
@@ -71,6 +71,23 @@ export const createDefaultLoader = function(reader: Reader, writer: Writer): Def
 			.catch(function(err) {
 				callback(err)
 			})
+	}
+}
+
+export const addFormatToConfig = function(configPrettier, targetPath: string): any {
+	switch (targetPath.replace(/^(\s|\S)*\./, '')) {
+		case 'ts':
+			return { ...configPrettier, format: 'typescript' }
+		case 'vue':
+			return { ...configPrettier, format: 'vue' }
+		case 'md':
+			return { ...configPrettier, format: 'md' }
+		case 'css':
+			return { ...configPrettier, format: 'css' }
+		case 'json':
+			return { ...configPrettier, format: 'json' }
+		default:
+			return configPrettier
 	}
 }
 
