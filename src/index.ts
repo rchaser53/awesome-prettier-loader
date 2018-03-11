@@ -77,15 +77,15 @@ export const createDefaultLoader = function(reader: Reader, writer: Writer): Def
 export const addFormatToConfig = function(configPrettier, targetPath: string): any {
 	switch (targetPath.replace(/^(\s|\S)*\./, '')) {
 		case 'ts':
-			return { ...configPrettier, format: 'typescript' }
+			return { ...configPrettier, parser: 'typescript' }
 		case 'vue':
-			return { ...configPrettier, format: 'vue' }
+			return { ...configPrettier, parser: 'vue' }
 		case 'md':
-			return { ...configPrettier, format: 'md' }
+			return { ...configPrettier, parser: 'md' }
 		case 'css':
-			return { ...configPrettier, format: 'css' }
+			return { ...configPrettier, parser: 'css' }
 		case 'json':
-			return { ...configPrettier, format: 'json' }
+			return { ...configPrettier, parser: 'json' }
 		default:
 			return configPrettier
 	}
