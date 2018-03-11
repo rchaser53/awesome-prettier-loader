@@ -1,5 +1,5 @@
-import * as path from 'path'
 import * as fs from 'fs'
+import * as path from 'path'
 import { getOptions } from 'loader-utils'
 import * as validateOptions from 'schema-utils'
 import * as checksum from 'checksum'
@@ -14,9 +14,8 @@ let lastChecksum: { [key: string]: string } = {}
 let dirtyRequests: string[] = []
 let configIgnore: string[] = []
 const DefaultConfigIgnore = ['node_modules']
-const DefaultConfigPath = path.resolve(__dirname, '.prettierrc')
-const DefaultIgnorePath = path.resolve(__dirname, '.prettierignore')
-
+const DefaultConfigPath = path.resolve(process.cwd(), '.prettierrc')
+const DefaultIgnorePath = path.resolve(process.cwd(), '.prettierignore')
 export const pitchLoader = function(remainingRequest: string, prevRequest, dataInput: { [key: string]: any }): void {
 	dataInput.remainingRequest = remainingRequest
 }
