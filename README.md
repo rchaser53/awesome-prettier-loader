@@ -1,8 +1,10 @@
+![build_status](https://travis-ci.org/rchaser53/html-handler.svg?branch=master)
+
 # awesome-prettier-loader
 
 this is a alternative prettier-loader. this loader support `.prettierignore` and `webpack-dev-server`(live reloading).
 
-## Installation
+## installation
 
 ```
  $ npm install awesome-prettier-loader --only=dev
@@ -13,6 +15,15 @@ or
 ```
  $ yarn add awesome-prettier-loader --dev
 ```
+
+## difference between prettier-loader
+
+this loader supports below feature.
+
+* webpack 4
+* .prettierignore
+* webpack-dev-server(live reloading)
+* vue, typescript, css file
 
 ## how to use
 
@@ -29,7 +40,8 @@ module.exports = {
       {
         test: /\.js?$/,
         use: {
-          loader: 'awesome-prettier-loader'
+          'babel-loader', // you can use arbitrary loader
+          'awesome-prettier-loader'
         }
       }
     ]
