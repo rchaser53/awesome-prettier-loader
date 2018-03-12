@@ -28,9 +28,8 @@ this loader supports below feature.
 
 ## how to use
 
-this is a beta package, so i didn't test sufficiently for webpack 2 and 3.
-(not support for webpack 1).
-if you have the problem, please make the issue.
+the awesome-prettier-loader supports webpack 2-4. (not support for webpack 1).
+issue and PR welcome.
 
 ```
 // webpack.config.js example
