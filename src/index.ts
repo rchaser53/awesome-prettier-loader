@@ -43,7 +43,7 @@ export const createDefaultLoader = function(reader: Reader, writer: Writer): Def
 			return
 		}
 
-		const innerPitchLoader = async function() {
+		const innerDefaultLoader = async function() {
 			try {
 				const data = await reader(actualPath)
 				const fileCheckSum: string = checksum(data)
@@ -64,7 +64,7 @@ export const createDefaultLoader = function(reader: Reader, writer: Writer): Def
 			}
 		}
 
-		innerPitchLoader()
+		innerDefaultLoader()
 			.then(function() {
 				callback(null, input)
 			})
